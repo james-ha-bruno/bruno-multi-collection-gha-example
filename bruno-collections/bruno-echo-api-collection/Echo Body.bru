@@ -1,0 +1,21 @@
+meta {
+  name: Echo Body
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "hello": "bruno"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
