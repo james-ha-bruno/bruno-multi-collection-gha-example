@@ -11,12 +11,19 @@ jobs:
   bru-tests:
     runs-on: ubuntu-latest
     strategy:
+      # Add one row per collection, pointing to its folder and the env name defined in that collection
       matrix:
-        collection: 
-          - github-rest-api-collection
-          - cat-facts-api-collection
-          - bruno-echo-api-collection
-    name: Run ${{ matrix.collection }}
+        include:
+          - collection: github-rest-api-collection
+            env: Github
+          - collection: cat-facts-api-collection
+            env: catfacts - prod
+          - collection: bruno-echo-api-collection
+            env: Local-Env
+      fail-fast: false
+
+    name: Run ${{ matrix.collection }} (${{ matrix.env }})
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,19 +31,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Install Bruno CLI
         run: npm install -g @usebruno/cli
-      
+
       - name: Run API Tests
+      # IMPORTANT: path is relative to repo root and points into bruno-collections/<folder>
         working-directory: ./bruno-collections/${{ matrix.collection }}
         run: |
-          pwd
-          ls -la
-          bru run --env Github --reporter-html results.html
-      
+          echo "Collection: ${{ matrix.collection }}"
+          echo "Environment: ${{ matrix.env }}"
+          bru run --env "${{ matrix.env }}" --reporter-html results.html
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.collection }}-results
+          name: ${{ matrix.collection }}-${{ matrix.env }}-results
           path: bruno-collections/${{ matrix.collection }}/results.html
