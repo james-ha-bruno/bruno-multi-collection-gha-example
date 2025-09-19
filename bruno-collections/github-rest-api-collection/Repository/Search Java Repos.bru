@@ -1,0 +1,17 @@
+meta {
+  name: Search Java Repos
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/search/repositories?q=java&order=desc&per_page=10
+  body: none
+  auth: none
+}
+
+params:query {
+  q: java
+  order: desc
+  per_page: 15
+}

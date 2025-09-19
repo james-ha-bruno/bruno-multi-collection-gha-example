@@ -1,0 +1,15 @@
+meta {
+  name: Get Random Fact
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/fact
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~max_length: 
+}

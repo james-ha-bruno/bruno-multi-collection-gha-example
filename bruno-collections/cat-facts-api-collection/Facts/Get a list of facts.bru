@@ -1,0 +1,16 @@
+meta {
+  name: Get a list of facts
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/facts
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~max_length: 
+  ~limit: 
+}

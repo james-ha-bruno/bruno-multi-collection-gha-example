@@ -1,0 +1,17 @@
+meta {
+  name: Search JavaScript Repos
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/search/repositories?q=javascript&order=desc&per_page=10
+  body: none
+  auth: none
+}
+
+params:query {
+  q: javascript
+  order: desc
+  per_page: 15
+}

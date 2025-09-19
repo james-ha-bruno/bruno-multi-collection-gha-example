@@ -1,0 +1,17 @@
+meta {
+  name: Search Rust Repos
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/search/repositories?q=rust&order=desc&per_page=15
+  body: none
+  auth: none
+}
+
+params:query {
+  q: rust
+  order: desc
+  per_page: 15
+}

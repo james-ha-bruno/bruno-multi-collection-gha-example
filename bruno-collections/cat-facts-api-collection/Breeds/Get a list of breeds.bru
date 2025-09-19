@@ -1,0 +1,19 @@
+meta {
+  name: Get a list of breeds
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/breeds
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~limit: 
+}
+
+vars:pre-request {
+  test: varvalue
+}
