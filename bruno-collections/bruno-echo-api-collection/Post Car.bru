@@ -1,10 +1,10 @@
 meta {
-  name: Echo Body copy
+  name: Post Car
   type: http
   seq: 3
 }
 
-get {
+post {
   url: https://echo.usebruno.com
   body: json
   auth: inherit
@@ -12,15 +12,15 @@ get {
 
 body:json {
   {
-    "who": "bruno",
-    "why": "for apis!",
-    "where": "echo demo"
+    "ID": "{{$randomUUID}}",
+    "Product Name": "{{$randomProductName}}",
+    "Product Price": "{{$randomPrice}}"
   }
 }
 
 assert {
   res.status: eq 200
-  res.body.who: eq bruno
+  res.body.ID.length: eq 36
 }
 
 settings {
