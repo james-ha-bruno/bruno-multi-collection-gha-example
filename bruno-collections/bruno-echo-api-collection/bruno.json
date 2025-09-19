@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "training-collection",
+  "name": "Echo APIs",
   "type": "collection",
   "ignore": [
     "node_modules",
