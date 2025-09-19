@@ -37,9 +37,10 @@ jobs:
         run: npm install -g @usebruno/cli
       
       - name: Run API Tests
-        working-directory: /bruno-collections/github-rest-api-collection 
+        working-directory: ./bruno-collections/github-rest-api-collection 
         run: |
-          ls
+          pwd
+          ls -la
           bru run --env Github --reporter-html gh-rest-api-results.html
       
       - name: Upload Test Results
