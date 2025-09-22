@@ -1,50 +1,98 @@
+# Bruno CLI Multi-Collection Demo
+#
+# This workflow demonstrates how to run multiple Bruno API collections
+# in parallel using GitHub Actions matrix strategy. Each collection tests
+# different APIs with their respective environments.
+
 name: Bru CLI with multiple Collections
 
+# Trigger the workflow on:
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]        # Run on pushes to main branch
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ "main" ]        # Run on PRs targeting main branch
+  workflow_dispatch:            # Allow manual triggering from GitHub UI
 
 jobs:
   bru-tests:
     runs-on: ubuntu-latest
+
+    # Matrix strategy allows running multiple collections in parallel
+    # Each matrix entry represents one collection + environment combination
     strategy:
-      # Add one row per collection, pointing to its folder and the env name defined in that collection
       matrix:
         include:
+          # GitHub REST API Collection
+          # Tests public GitHub API endpoints (user info, repositories)
           - collection: github-rest-api-collection
             env: Github
+            description: "GitHub REST API endpoints"
+
+          # Cat Facts API Collection
+          # Tests the Cat Facts API for random facts and breed information
           - collection: cat-facts-api-collection
             env: catfacts - prod
+            description: "Cat Facts API endpoints"
+
+          # Bruno Echo API Collection
+          # Tests Bruno's own echo service for request/response validation
           - collection: bruno-echo-api-collection
             env: Local-Env
+            description: "Bruno Echo API endpoints"
+
+      # Don't cancel other matrix jobs if one fails
+      # This ensures we get results from all collections even if some fail
       fail-fast: false
 
+    # Dynamic job name showing which collection and environment is being tested
     name: Run ${{ matrix.collection }} (${{ matrix.env }})
 
     steps:
-      - uses: actions/checkout@v4
+      # Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      # Setup Node.js environment for Bruno CLI
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20'          # Use Node.js 20 LTS
+          cache: 'npm'                # Cache npm dependencies for faster builds
 
+      # Install Bruno CLI globally
+      # The CLI is needed to run .bru files from command line
       - name: Install Bruno CLI
         run: npm install -g @usebruno/cli
 
-      - name: Run API Tests
-      # IMPORTANT: path is relative to repo root and points into bruno-collections/<folder>
+      # Run the API tests for this matrix combination
+      - name: Run API Tests - ${{ matrix.description }}
+        # IMPORTANT: Working directory must point to the specific collection folder
+        # Each collection has its own bruno.json and environments/ directory
         working-directory: ./bruno-collections/${{ matrix.collection }}
         run: |
-          echo "Collection: ${{ matrix.collection }}"
-          echo "Environment: ${{ matrix.env }}"
+          echo "🚀 Running Collection: ${{ matrix.collection }}"
+          echo "🌍 Using Environment: ${{ matrix.env }}"
+          echo "📝 Description: ${{ matrix.description }}"
+          echo ""
+
+          # Run Bruno CLI with:
+          # --env: Specifies which environment file to use from environments/ folder
+          # --reporter-html: Generates an HTML report file with detailed results
           bru run --env "${{ matrix.env }}" --reporter-html results.html
 
+          echo ""
+          echo "✅ Tests completed for ${{ matrix.collection }}"
+
+      # Upload the HTML test results as downloadable artifacts
+      # Each collection gets its own artifact for easy identification
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
+        if: always()                  # Upload results even if tests failed
         with:
-          name: ${{ matrix.collection }}-${{ matrix.env }}-results
+          # Artifact name includes collection and environment for clarity
+          name: test-results-${{ matrix.collection }}-${{ matrix.env }}
+          # Path to the generated HTML report (relative to repo root)
           path: bruno-collections/${{ matrix.collection }}/results.html
+          # Keep artifacts for 30 days
+          retention-days: 30
