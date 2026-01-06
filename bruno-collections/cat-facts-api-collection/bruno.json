@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "Cat Fact API",
+  "name": "Cat Fact API - Demo",
   "type": "collection",
   "ignore": [
     "node_modules",
